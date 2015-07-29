@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Re-Mapping America</title>
+		<style type="text/css">
+			.map {
+				float: left;
+				border: 1px solid black;
+				padding: 1em;
+				margin: 1em;
+			}
+			.map div {
+				width: 300px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="maps"></div>
+		
+		<script type="text/javascript" src="lib/jquery.min.js"></script> <!-- v2.1.4 -->
+		<script type="text/javascript" src="lib/jquery.flot.min.js"></script> <!-- v0.8.3 -->
+		<script type="text/javascript" src="states.js"></script> 
+		<script type="text/javascript">
+		var options =   {
+			grid: {show: false,
+				color: "rgb(48, 48, 48)",
+				tickColor: "rgba(255, 255, 255, 0)",
+				backgroundColor: "rgb(255, 255, 255)"}
+			};
+			function character_number(char) {
+				return char.charCodeAt(0) - 65;
+			}
+
+			$(document).ready(function() {
+				$(states).each(function (i, state) {
+					var id    = state.replace(' ', '').toLowerCase();
+					var name  = id.toUpperCase();
+					$('#maps').append('<div id="'+id+'" class="map"><h3>'+state+'</h3><div></div></div>');
+
+					var graph = [];
+					var pair  = [];
+					var line  = [];
+
+					for (var i = 0; i<name.length; i++) {
+						pair.push(character_number(name[i]));
+						if (pair.length == 2) {
+							line.push(pair);
+							pair = [];
+						}
+						
+						if (line.length == 2) {
+							graph.push(line);
+							line = [line[1]];
+						}
+					}
+					graph.push([graph[graph.length-1][1], graph[0][0]]);
+					//lines.push([character_number(name[name.length-1]), character_number(name[0])]);
+
+					console.log(graph);
+					$('#'+id+' div').plot(graph, options);
+				});
+			});
+		</script>
+	</body>
+</html>

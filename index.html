@@ -19,6 +19,7 @@
 		<div id="maps"></div>
 		
 		<script type="text/javascript" src="lib/jquery.min.js"></script> <!-- v2.1.4 -->
+		<script type="text/javascript" src="lib/jquery-ui.min.js"></script> <!-- v1.11.4 -->
 		<script type="text/javascript" src="lib/jquery.flot.min.js"></script> <!-- v0.8.3 -->
 		<script type="text/javascript" src="states.js"></script> 
 		<script type="text/javascript">
@@ -59,6 +60,10 @@
 
 					console.log(graph);
 					$('#'+id+' div').plot(graph, options);
+
+					$('#maps div').resizable();
+					$('#maps div').draggable();
+
 				});
 			});
 		</script>

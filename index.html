@@ -2,33 +2,60 @@
 <html>
 	<head>
 		<title>Re-Mapping America</title>
+		<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/jquery-ui.structure.min.css" type="text/css" />
 		<style type="text/css">
+			body {
+				margin: 0;
+				padding: 0;
+			}
+			#america {
+				width: 100%;
+				border: 1px solid black;
+				display: none;
+			}
+			#murica {
+				width: 100%;
+				display: none;
+			}
 			.map {
 				float: left;
-				border: 1px solid black;
-				padding: 1em;
-				margin: 1em;
-			}
-			.map div {
+				margin: 1px;
 				width: 300px;
 				height: 300px;
+
+			}
+			.bordered {
+				margin: 0px;
+				border: 1px solid black;
 			}
 		</style>
 	</head>
 	<body>
-		<div id="maps"></div>
+		<div id="header">
+			<a href="#" id="toggle_america">Toggle Map</a>
+			<a href="#" id="toggle_borders">Toggle Borders</a>
+			<a href="#" id="hide_header">Hide Header (can't be undone)</a>
+		</div>
+		<div id="murica"></div>
+		<img id="america" src="img/america.png" />
 		
-		<script type="text/javascript" src="lib/jquery.min.js"></script> <!-- v2.1.4 -->
-		<script type="text/javascript" src="lib/jquery-ui.min.js"></script> <!-- v1.11.4 -->
-		<script type="text/javascript" src="lib/jquery.flot.min.js"></script> <!-- v0.8.3 -->
+		<script type="text/javascript" src="js/jquery.min.js"></script> <!-- v2.1.4 -->
+		<script type="text/javascript" src="js/jquery-ui.min.js"></script> <!-- v1.11.4 -->
+		<script type="text/javascript" src="js/jquery.flot.min.js"></script> <!-- v0.8.3 -->
+		<script type="text/javascript" src="js/jquery.flot.resize.min.js"></script> <!-- v0.8.3 -->
 		<script type="text/javascript" src="states.js"></script> 
 		<script type="text/javascript">
-		var options =   {
-			grid: {show: false,
-				color: "rgb(48, 48, 48)",
-				tickColor: "rgba(255, 255, 255, 0)",
-				backgroundColor: "rgb(255, 255, 255)"}
+			var data = { };
+			var options =   {
+				grid: {
+					show: false,
+					color: "rgb(48, 48, 48)",
+					tickColor: "rgba(255, 255, 255, 0)",
+					backgroundColor: "rgb(255, 255, 255)"
+				}
 			};
+
 			function character_number(char) {
 				return char.charCodeAt(0) - 65;
 			}
@@ -37,7 +64,7 @@
 				$(states).each(function (i, state) {
 					var id    = state.replace(' ', '').toLowerCase();
 					var name  = id.toUpperCase();
-					$('#maps').append('<div id="'+id+'" class="map"><h3>'+state+'</h3><div></div></div>');
+					var $div  = $('<div id="'+id+'" class="map bordered ui-widget-content" title="'+name+'"><div>');
 
 					var graph = [];
 					var pair  = [];
@@ -56,15 +83,43 @@
 						}
 					}
 					graph.push([graph[graph.length-1][1], graph[0][0]]);
-					//lines.push([character_number(name[name.length-1]), character_number(name[0])]);
+					
+					$('body').append($div);
 
-					console.log(graph);
-					$('#'+id+' div').plot(graph, options);
+					data[id] = $div.plot(graph, options);
+					$div.resizable({
+						'stop': function (e, ui) { ui.element.resize(); }
+					});
+					$div.draggable();
 
-					$('#maps div').resizable();
-					$('#maps div').draggable();
-
+					$div.on('mouseover', function() {
+						//console.log(this);
+						$(this).addClass('highlight');
+					}).on('mouseout', function() {
+						$(this).removeClass('highlight');
+					})
 				});
+
+				$('#america').show();
+				$('#murica').height($('#america').height());
+				$('#toggle_america').on('click', function() {
+					$('#america').toggle();
+					$('#murica').toggle();
+				});
+
+				$('#toggle_borders').on('click', function() {
+					if ($('.bordered').size() > 0) {
+						$('.bordered').removeClass('bordered');
+					} else {
+						$('.map').addClass('bordered');
+					}
+				});
+
+				$('#hide_header').on('click', function() {
+					$('#header').hide();
+				})
+
+
 			});
 		</script>
 	</body>
